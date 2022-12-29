@@ -4,30 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
 
     public function index()
     {
-        $data = Product::all();
-
-        // if (!isset($data)) {
-        //     return abort(404);
-        // }
-        dd($data);
-        return '<h1>Products List Page</h1>';
+        return view('products.index');
     }
 
     public function create()
     {
-        return '<h1>Create Product Form</h1>';
+        return view('products.create');
     }
 
     public function store(Request $request)
     {
-        dd('storing a product');
+        $formData = $request->validate([
+            'title' => ['required', 'min:3', 'max:20'],
+            'description' => ['required', 'min:20', 'max:255'],
+            'status' => ['required', 'in:available,unavailable'],
+            'price' => ['required', 'min:0'],
+            'stock' => ['required', 'min:0']
+        ]);
+
+        Product::create($formData);
+
+        return redirect()->route('products.index')->with(['msg' => 'Product has beed added successfully!']);
     }
 
 
