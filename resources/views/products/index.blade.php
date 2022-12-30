@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('content')
-  <div class="container">
+  <div class="container py-5">
     <h1 class="text-center mb-3">Shopping</h1>
     @unless($products->count() === 0)
       @foreach($products as $product)
