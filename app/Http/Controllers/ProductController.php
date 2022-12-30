@@ -10,7 +10,8 @@ class ProductController extends Controller
 
     public function index()
     {
-        return view('products.index');
+        $products = Product::all();
+        return view('products.index', ['products' => $products]);
     }
 
     public function create()
@@ -34,31 +35,37 @@ class ProductController extends Controller
     }
 
 
-    public function show($id)
+    public function show(Product $product)
     {
-        return "<h1>Showing Product #{$id}</h1>";
+        return "<h1>Showing Product {$product->title}</h1>";
     }
 
 
-    public function edit($id)
+    public function edit(Product $product)
     {
-        return "<h1>Editing Product #{$id} Form</h1>";
+        return view('products.edit', ['product' => $product]);
     }
 
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Product $product)
     {
-        //
+        $formData = $request->validate([
+            'title' => ['required', 'min:3', 'max:20'],
+            'description' => ['required', 'min:20', 'max:255'],
+            'status' => ['required', 'in:available,unavailable'],
+            'price' => ['required', 'min:0'],
+            'stock' => ['required', 'min:0']
+        ]);
+
+        $product->update($formData);
+
+        return redirect()->route('products.show', $product->id);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function destroy(Product $product)
     {
-        //
+        $product->delete();
+
+        return redirect()->route('products.index');
     }
 }
